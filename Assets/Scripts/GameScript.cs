@@ -22,8 +22,9 @@ public class GameScript : MonoBehaviour
                 if (Vector2.Distance(emptySpace.position, hit.transform.position) < 1.4f)
                 {
                     Vector2 lastEmptySpacePosition = emptySpace.position;
-                    emptySpace.position = hit.transform.position;
-                    hit.transform.position = lastEmptySpacePosition;
+                    TilesScript thisTile = hit.transform.GetComponent<TilesScript>(); 
+                    emptySpace.position = thisTile.targetPosition;
+                    thisTile.targetPosition = lastEmptySpacePosition;
                 }
             }
         }
