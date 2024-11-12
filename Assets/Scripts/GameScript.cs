@@ -25,10 +25,10 @@ public class GameScript : MonoBehaviour
                 if (Vector2.Distance(emptySpace.position, hit.transform.position) < 1.4f)
                 {
                     Vector2 lastEmptySpacePosition = emptySpace.position;
-                    TilesScript thisTile = hit.transform.GetComponent<TilesScript>(); 
+                    TilesScript thisTile = hit.transform.GetComponent<TilesScript>();
                     emptySpace.position = thisTile.targetPosition;
                     thisTile.targetPosition = lastEmptySpacePosition;
-                    int tileIndex =  findIndex(thisTile);
+                    int tileIndex = findIndex(thisTile);
                     tiles[emptySpaceIndex] = tiles[tileIndex];
                     tiles[tileIndex] = null;
                     emptySpaceIndex = tileIndex;
@@ -38,8 +38,20 @@ public class GameScript : MonoBehaviour
     }
     public void Shuffle()
     {
-        for (int i = 0;i <= 14; i++)
+        if (emptySpaceIndex != 15)
         {
+            var tileOn15LastPos = tiles[15].targetPosition;
+            tiles[15].targetPosition = emptySpace.position;
+            emptySpace.position = tileOn15LastPos;
+            tiles[emptySpaceIndex] = tiles[15];
+            tiles[15] = null;
+            emptySpaceIndex = 15;
+        }
+        int invertion;
+        do
+        {
+            for (int i = 0; i <= 14; i++)
+            {
                 var lastPos = tiles[i].targetPosition;
                 int randomIndex = Random.Range(0, 14);
                 tiles[i].targetPosition = tiles[randomIndex].targetPosition;
@@ -47,20 +59,46 @@ public class GameScript : MonoBehaviour
                 var tile = tiles[i];
                 tiles[i] = tiles[randomIndex];
                 tiles[randomIndex] = tile;
-        }
+            }
+            invertion = GetInversions();
+            Debug.Log("Puzzle Shuffled");
+        } while (invertion%2 != 0);
     }
     public int findIndex(TilesScript ts)
     {
         for (int i = 0; i < tiles.Length; i++)
         {
             if (tiles[i] != null)
-            { 
-             if (tiles[i] == ts)
-                    { return i; }
+            {
+                if (tiles[i] == ts)
+                { return i; }
             }
         }
         return -1;
 
     }
+
+    int GetInversions()
+    {
+        int inversionSum = 0;
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            int thisTileInvertion = 0;
+            for (int j = i; j < tiles.Length; j++)
+            {
+                if (tiles[j] != null)
+                {
+                    if (tiles[i].number > tiles[j].number)
+                    {
+                        thisTileInvertion++;
+                    }
+
+                }
+            }
+            inversionSum += thisTileInvertion;
+        }
+        return inversionSum;
+    }
 }
+
 
